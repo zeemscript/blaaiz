@@ -20,13 +20,13 @@ Yet, getting those earnings into spendable local currency (NGN, KES, GHS) forces
 
 ---
 
-## 🚀 The Three Core Pillars
+## 🚀 Four Interactive Pillars (Live on the Landing Page)
 
-Beam provides three distinct, live payment flows accessible in the interactive demo (`/send`):
+Beam provides four distinct, live payment flows embedded directly on the homepage (`/`) and at `/send`:
 
 ### 1. ⚡ Instant Payouts (Freelancer & Contractor Receivables)
 - **Problem:** US/European clients pay in USD, USDT, or USDC, but the contractor needs local currency in their bank or mobile wallet.
-- **Solution:** Beam lets recipients select their preferred rail (Nigerian Bank Transfer, Kenyan M-Pesa, Ghanaian Mobile Money, UK Faster Payments, or US ACH). Blaaiz provides a transparent, real-time exchange rate and fee quote, and settles funds directly to the recipient's account.
+- **Solution:** Beam lets recipients select their preferred rail (Nigerian Bank Transfer, Kenyan M-Pesa, Ghanaian Mobile Money, UK Faster Payments, or US ACH). Blaaiz provides a transparent, real-time exchange rate and fee quote, and settles funds directly to the recipient's account. Includes **1-Click Test Presets** for instant testing.
 
 ### 2. 🌍 Pay Abroad (Spend What You Have, Anywhere)
 - **Problem:** An African merchant or traveler holding Naira in Lagos needs to pay a vendor or supplier in Accra or London.
@@ -38,6 +38,10 @@ Beam provides three distinct, live payment flows accessible in the interactive d
   1. **Job Funded:** The employer specifies the contract and funds it in USDT/USDC via a dynamic deposit address generated directly by Blaaiz collections.
   2. **Held in Escrow:** Funds are locked in escrow while work is carried out.
   3. **Instant Settlement:** Upon milestone approval, the employer releases the escrow in one click, triggering Blaaiz's complete multi-rail payout directly to the freelancer's local bank or mobile wallet.
+
+### 4. 📊 Real-Time Payout Tracker & API Audit Inspector
+- **Problem:** Judges and users need visibility into transaction lifecycles and transparent audit trails.
+- **Solution:** An animated 4-step settlement tracker (`Transfer Initiated` → `FX Rate Locked` → `Dispatched to Rail` → `Funds Delivered`), receipt summary with copyable reference code (`BLZ-8842109`), reference search lookup, and an expandable **Blaaiz API Integration Inspector** displaying exact SDK methods (`blaaiz.createCompletePayout`), request payloads, durations, and simulated webhook events.
 
 ---
 

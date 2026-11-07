@@ -4,13 +4,17 @@ import { useState } from "react";
 import { fundingAssets } from "@/lib/destinations";
 import { useQuote } from "@/lib/useQuote";
 import { RecipientPicker, inputClass, type RecipientPayload } from "@/components/demo/RecipientPicker";
+import { PayoutTracker } from "@/components/demo/PayoutTracker";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { SparklesIcon } from "@hugeicons/core-free-icons";
+import type { PayoutRecord } from "@/lib/payout-store";
 
 export function InstantPayoutForm() {
   const [senderFirstName, setSenderFirstName] = useState("");
   const [senderLastName, setSenderLastName] = useState("");
   const [senderEmail, setSenderEmail] = useState("");
 
-  const [fromAsset, setFromAsset] = useState<"USD" | "USDT" | "USDC">("USD");
+  const [fromAsset, setFromAsset] = useState<"USD" | "USDT" | "USDC">("USDT");
   const [amount, setAmount] = useState("500");
 
   const [recipient, setRecipient] = useState<RecipientPayload | null>(null);
@@ -19,6 +23,28 @@ export function InstantPayoutForm() {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<unknown>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  function applyPreset(type: "nigeria" | "kenya" | "ghana") {
+    if (type === "nigeria") {
+      setSenderFirstName("Alex");
+      setSenderLastName("Morrison");
+      setSenderEmail("alex.client@designstudio.com");
+      setFromAsset("USDT");
+      setAmount("500");
+    } else if (type === "kenya") {
+      setSenderFirstName("Sarah");
+      setSenderLastName("Jenkins");
+      setSenderEmail("sarah.j@globalremote.io");
+      setFromAsset("USD");
+      setAmount("250");
+    } else {
+      setSenderFirstName("David");
+      setSenderLastName("Kramer");
+      setSenderEmail("david.k@contractors.org");
+      setFromAsset("USDC");
+      setAmount("150");
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,8 +78,58 @@ export function InstantPayoutForm() {
     }
   }
 
+  if (result != null) {
+    const resObj = result as { data?: PayoutRecord; payout?: PayoutRecord };
+    const record = resObj.data || resObj.payout || (result as PayoutRecord);
+    return (
+      <PayoutTracker
+        initialRecord={record}
+        onReset={() => {
+          setResult(null);
+          setSubmitError(null);
+        }}
+      />
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      {/* 1-Click Test Presets */}
+      <div className="flex flex-col gap-2 rounded-2xl border border-violet-500/25 bg-gradient-to-r from-violet-500/5 via-fuchsia-500/5 to-orange-500/5 p-3.5 dark:border-violet-500/30">
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-1.5 text-xs font-semibold text-violet-700 dark:text-violet-300">
+            <HugeiconsIcon icon={SparklesIcon} size={14} />
+            Quick Test Presets (1-Click Auto-Fill)
+          </span>
+          <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400">
+            Blaaiz RaaS
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          <button
+            type="button"
+            onClick={() => applyPreset("nigeria")}
+            className="rounded-lg border border-violet-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-800 transition-colors hover:bg-violet-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-violet-950"
+          >
+            🇳🇬 500 USDT → Nigeria Bank
+          </button>
+          <button
+            type="button"
+            onClick={() => applyPreset("kenya")}
+            className="rounded-lg border border-violet-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-800 transition-colors hover:bg-violet-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-violet-950"
+          >
+            🇰🇪 $250 USD → Kenya M-Pesa
+          </button>
+          <button
+            type="button"
+            onClick={() => applyPreset("ghana")}
+            className="rounded-lg border border-violet-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-800 transition-colors hover:bg-violet-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-violet-950"
+          >
+            🇬🇭 150 USDC → Ghana MoMo
+          </button>
+        </div>
+      </div>
+
       <fieldset className="flex flex-col gap-3">
         <legend className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Sender</legend>
         <div className="grid grid-cols-2 gap-3">
@@ -84,16 +160,21 @@ export function InstantPayoutForm() {
         <input required type="number" min="1" step="0.01" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} className={inputClass} />
         {quoteError && <p className="text-sm text-red-600 dark:text-red-400">{quoteError}</p>}
         {quote && recipient && (
-          <div className="rounded border border-zinc-200 bg-white p-3 text-sm dark:border-zinc-800 dark:bg-zinc-900">
-            <p className="text-zinc-600 dark:text-zinc-400">
-              Fees: <span className="font-medium text-black dark:text-zinc-50">{quote.total_fees}</span>
-            </p>
-            <p className="text-zinc-600 dark:text-zinc-400">
-              Recipient gets:{" "}
-              <span className="font-medium text-black dark:text-zinc-50">
+          <div className="rounded-2xl border border-zinc-200 bg-white p-3.5 text-sm dark:border-zinc-800 dark:bg-zinc-900">
+            <div className="flex items-center justify-between text-xs text-zinc-500">
+              <span>Blaaiz FX Quote</span>
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">Locked</span>
+            </div>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="text-xs text-zinc-500">Total fees:</span>
+              <span className="font-medium text-black dark:text-zinc-50">{quote.total_fees}</span>
+            </div>
+            <div className="mt-1 flex items-center justify-between">
+              <span className="text-xs text-zinc-500">Recipient gets:</span>
+              <span className="font-bold text-black dark:text-zinc-50">
                 {recipient.destination.flag} {quote.recipient_gets.toLocaleString()} {recipient.destination.currencyCode}
               </span>
-            </p>
+            </div>
           </div>
         )}
       </fieldset>
@@ -103,18 +184,13 @@ export function InstantPayoutForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="mt-2 rounded-full bg-foreground px-5 py-3 text-sm font-medium text-background transition-colors hover:bg-[#383838] disabled:opacity-50 dark:hover:bg-[#ccc]"
+        className="mt-2 flex items-center justify-center gap-2 rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-colors hover:bg-zinc-800 disabled:opacity-50 dark:hover:bg-zinc-200"
       >
-        {submitting ? "Sending…" : "Send payout"}
+        {submitting ? "Processing Blaaiz Payout…" : "Send Payout & Track Status →"}
       </button>
 
       {submitError && (
-        <p className="rounded bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{submitError}</p>
-      )}
-      {result != null && (
-        <pre className="overflow-x-auto rounded bg-zinc-100 p-3 text-xs text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
-          {JSON.stringify(result, null, 2)}
-        </pre>
+        <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{submitError}</p>
       )}
     </form>
   );

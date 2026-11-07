@@ -4,6 +4,8 @@ import { useState } from "react";
 import { localCurrencies } from "@/lib/destinations";
 import { useQuote } from "@/lib/useQuote";
 import { RecipientPicker, inputClass, type RecipientPayload } from "@/components/demo/RecipientPicker";
+import { PayoutTracker } from "@/components/demo/PayoutTracker";
+import type { PayoutRecord } from "@/lib/payout-store";
 
 export function PayAbroadForm() {
   const [payerFirstName, setPayerFirstName] = useState("");
@@ -52,6 +54,20 @@ export function PayAbroadForm() {
     }
   }
 
+  if (result != null) {
+    const resObj = result as { data?: PayoutRecord; payout?: PayoutRecord };
+    const record = resObj.data || resObj.payout || (result as PayoutRecord);
+    return (
+      <PayoutTracker
+        initialRecord={record}
+        onReset={() => {
+          setResult(null);
+          setSubmitError(null);
+        }}
+      />
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <p className="rounded-2xl border border-zinc-200 bg-white p-4 text-sm text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
@@ -90,7 +106,7 @@ export function PayAbroadForm() {
         <input required type="number" min="1" step="0.01" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} className={inputClass} />
         {quoteError && <p className="text-sm text-red-600 dark:text-red-400">{quoteError}</p>}
         {quote && recipient && (
-          <div className="rounded border border-zinc-200 bg-white p-3 text-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="rounded 2xl border border-zinc-200 bg-white p-3.5 text-sm dark:border-zinc-800 dark:bg-zinc-900">
             <p className="text-zinc-600 dark:text-zinc-400">
               Fees: <span className="font-medium text-black dark:text-zinc-50">{quote.total_fees}</span>
             </p>
@@ -109,18 +125,13 @@ export function PayAbroadForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="mt-2 rounded-full bg-foreground px-5 py-3 text-sm font-medium text-background transition-colors hover:bg-[#383838] disabled:opacity-50 dark:hover:bg-[#ccc]"
+        className="mt-2 flex items-center justify-center gap-2 rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-colors hover:bg-zinc-800 disabled:opacity-50 dark:hover:bg-zinc-200"
       >
-        {submitting ? "Paying…" : "Pay seller"}
+        {submitting ? "Processing Settlement…" : "Pay Seller & Track Status →"}
       </button>
 
       {submitError && (
-        <p className="rounded bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{submitError}</p>
-      )}
-      {result != null && (
-        <pre className="overflow-x-auto rounded bg-zinc-100 p-3 text-xs text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
-          {JSON.stringify(result, null, 2)}
-        </pre>
+        <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{submitError}</p>
       )}
     </form>
   );

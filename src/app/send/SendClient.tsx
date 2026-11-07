@@ -6,8 +6,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { InstantPayoutForm } from "@/components/demo/InstantPayoutForm";
 import { PayAbroadForm } from "@/components/demo/PayAbroadForm";
 import { EscrowForm } from "@/components/demo/EscrowForm";
+import { PayoutTracker } from "@/components/demo/PayoutTracker";
 
-const modes = [
+export const modes = [
   {
     id: "payout",
     label: "Instant payout",
@@ -29,27 +30,54 @@ const modes = [
     subtitle:
       "Funds are held safely until the work is confirmed done, then released instantly to the freelancer.",
   },
+  {
+    id: "track",
+    label: "Track payout",
+    title: "Live Payout Tracker & Audit.",
+    subtitle:
+      "Follow any payout in real-time, view the step-by-step settlement lifecycle, and inspect Blaaiz API payloads.",
+  },
 ] as const;
 
 export type Mode = (typeof modes)[number]["id"];
 
-export function SendClient({ initialMode }: { initialMode: Mode }) {
+export function SendClient({
+  initialMode = "payout",
+  isLanding = false,
+}: {
+  initialMode?: Mode;
+  isLanding?: boolean;
+}) {
   const [mode, setMode] = useState<Mode>(initialMode);
-  const active = modes.find((m) => m.id === mode)!;
+  const active = modes.find((m) => m.id === mode) || modes[0];
 
   return (
-    <div className="flex flex-col flex-1 items-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex w-full max-w-xl flex-col gap-8 px-6 py-16">
+    <div
+      className={
+        isLanding
+          ? "w-full max-w-xl mx-auto"
+          : "flex flex-col flex-1 items-center bg-zinc-50 font-sans dark:bg-black"
+      }
+    >
+      <main
+        className={
+          isLanding
+            ? "flex w-full flex-col gap-6"
+            : "flex w-full max-w-xl flex-col gap-8 px-6 py-16"
+        }
+      >
         <div>
-          <Link
-            href="/"
-            className="text-sm text-zinc-500 hover:text-black dark:text-zinc-500 dark:hover:text-zinc-50"
-          >
-            ← Beam
-          </Link>
-          <h1 className="mt-3 text-2xl font-semibold text-black dark:text-zinc-50">
+          {!isLanding && (
+            <Link
+              href="/"
+              className="text-sm text-zinc-500 hover:text-black dark:text-zinc-500 dark:hover:text-zinc-50"
+            >
+              ← Beam Home
+            </Link>
+          )}
+          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-black dark:text-zinc-50">
             {active.title}
-          </h1>
+          </h2>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
             {active.subtitle}
           </p>
@@ -61,17 +89,17 @@ export function SendClient({ initialMode }: { initialMode: Mode }) {
               key={m.id}
               type="button"
               onClick={() => setMode(m.id)}
-              className="relative flex-1 rounded-full px-3 py-2 text-xs font-medium sm:text-sm"
+              className="relative flex-1 rounded-full px-2.5 py-2 text-xs font-medium sm:text-sm"
             >
               {mode === m.id && (
                 <motion.span
-                  layoutId="mode-pill"
+                  layoutId={isLanding ? "landing-mode-pill" : "mode-pill"}
                   transition={{ type: "spring", stiffness: 400, damping: 32 }}
                   className="absolute inset-0 rounded-full bg-foreground"
                 />
               )}
               <span
-                className={`relative z-10 ${
+                className={`relative z-10 truncate ${
                   mode === m.id ? "text-background" : "text-zinc-600 dark:text-zinc-400"
                 }`}
               >
@@ -92,6 +120,7 @@ export function SendClient({ initialMode }: { initialMode: Mode }) {
             {mode === "payout" && <InstantPayoutForm />}
             {mode === "abroad" && <PayAbroadForm />}
             {mode === "escrow" && <EscrowForm />}
+            {mode === "track" && <PayoutTracker />}
           </motion.div>
         </AnimatePresence>
       </main>

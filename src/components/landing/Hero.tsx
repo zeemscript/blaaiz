@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight02Icon, SparklesIcon } from "@hugeicons/core-free-icons";
@@ -54,17 +53,17 @@ export function Hero() {
             variants={fadeUp}
             className="flex flex-col gap-3 sm:flex-row"
           >
-            <Link
-              href="/send"
+            <a
+              href="#demo"
               className="group flex items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc]"
             >
-              Try the demo
+              Try the live demo
               <HugeiconsIcon
                 icon={ArrowRight02Icon}
                 size={16}
                 className="transition-transform group-hover:translate-x-0.5"
               />
-            </Link>
+            </a>
             <a
               href="#how-it-works"
               className="flex items-center justify-center rounded-full border border-black/[.08] px-6 py-3 text-sm font-medium text-black transition-colors hover:bg-black/[.04] dark:border-white/[.145] dark:text-zinc-50 dark:hover:bg-[#1a1a1a]"

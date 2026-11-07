@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { SendClient, type Mode } from "@/app/send/SendClient";
 
-const validModes: Mode[] = ["payout", "abroad", "escrow"];
+const validModes: Mode[] = ["payout", "abroad", "escrow", "track"];
 
 async function ModeResolver({
   searchParams,

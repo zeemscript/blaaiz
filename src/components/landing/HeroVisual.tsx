@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -221,13 +220,13 @@ export function HeroVisual() {
             : "Live rate loading…"}
         </p>
 
-        <Link
-          href="/send"
+        <a
+          href="#demo"
           className="mt-3 flex items-center justify-center gap-2 rounded-full bg-foreground px-4 py-3 text-sm font-medium text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc]"
         >
-          Send Money
+          Send Money &amp; Track Status
           <HugeiconsIcon icon={ArrowRight02Icon} size={16} />
-        </Link>
+        </a>
       </div>
     </div>
   );

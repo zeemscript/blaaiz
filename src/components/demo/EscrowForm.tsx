@@ -179,12 +179,23 @@ export function EscrowForm() {
         )}
 
         {escrow.status === "released" && (
-          <>
-            <p className="text-sm font-medium text-green-700 dark:text-green-400">Payment released.</p>
-            <pre className="overflow-x-auto rounded bg-zinc-100 p-3 text-xs text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
-              {JSON.stringify(escrow.payoutResult, null, 2)}
-            </pre>
-          </>
+          <div className="flex flex-col gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-50/50 p-4 dark:bg-emerald-950/20">
+            <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+              Payment Released &amp; Settled via Blaaiz
+            </div>
+            <p className="text-xs text-zinc-600 dark:text-zinc-400">
+              {escrow.fundingAmount} {escrow.fundingAsset} has been released and routed via {escrow.payout.method.replace("_", " ")} to {escrow.freelancerFirstName} {escrow.freelancerLastName}.
+            </p>
+            {escrow.payoutResult != null && (
+              <div className="rounded-xl bg-zinc-950 p-3 font-mono text-[11px] text-zinc-300">
+                <div className="mb-1 text-zinc-500">Blaaiz Settlement Audit:</div>
+                <pre className="overflow-x-auto text-[10.5px]">
+                  {JSON.stringify(escrow.payoutResult, null, 2)}
+                </pre>
+              </div>
+            )}
+          </div>
         )}
 
         {escrow.status === "failed" && escrow.error && (

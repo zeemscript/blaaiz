@@ -7,9 +7,11 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon, Menu01Icon, ZapIcon } from "@hugeicons/core-free-icons";
 
 const links = [
+  { href: "#demo", label: "Payouts" },
+  { href: "#tracker", label: "Live Tracker" },
+  { href: "#escrow", label: "Escrow" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#features", label: "Features" },
-  { href: "#faq", label: "FAQ" },
 ];
 
 export function Nav() {
