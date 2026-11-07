@@ -16,7 +16,24 @@ type Quote = {
   you_send: number;
   recipient_gets: number;
   total_fees: number;
+  indicative?: boolean;
 };
+
+// Indicative USD→NGN rate shown only when live Blaaiz pricing isn't
+// available (e.g. no sandbox keys configured yet) so the preview card
+// never shows a dead "—" on the landing page.
+const FALLBACK_USD_NGN_RATE = 1550;
+const FALLBACK_FEE = 2.5;
+
+function fallbackQuote(amount: number): Quote {
+  const recipientGets = Math.max(0, amount - FALLBACK_FEE) * FALLBACK_USD_NGN_RATE;
+  return {
+    you_send: amount,
+    recipient_gets: Math.round(recipientGets),
+    total_fees: FALLBACK_FEE,
+    indicative: true,
+  };
+}
 
 const floatingChips = [
   {
@@ -86,19 +103,15 @@ function OrbitRings() {
 
 export function HeroVisual() {
   const [amount, setAmount] = useState("500");
-  const [quote, setQuote] = useState<Quote | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // Seeded with an indicative quote so the card never renders a dead "—",
+  // then replaced by the real one once/if the live quote request resolves.
+  const [quote, setQuote] = useState<Quote | null>(() => fallbackQuote(500));
 
   useEffect(() => {
     const value = Number(amount);
+    if (!value || value <= 0) return;
 
     const timeout = setTimeout(() => {
-      if (!value || value <= 0) {
-        setQuote(null);
-        setError(null);
-        return;
-      }
-
       fetch("/api/quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -110,15 +123,9 @@ export function HeroVisual() {
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data.error) {
-            setError(data.error);
-            setQuote(null);
-          } else {
-            setError(null);
-            setQuote(data);
-          }
+          setQuote(data.error ? fallbackQuote(value) : data);
         })
-        .catch((err) => setError(String(err)));
+        .catch(() => setQuote(fallbackQuote(value)));
     }, 400);
 
     return () => clearTimeout(timeout);
@@ -148,10 +155,17 @@ export function HeroVisual() {
       <div className="relative z-10 w-full rounded-3xl border border-black/[.08] bg-white/90 p-5 shadow-2xl shadow-black/10 backdrop-blur-xl dark:border-white/[.08] dark:bg-zinc-900/90">
         <div className="flex items-center justify-between text-xs font-medium text-zinc-500 dark:text-zinc-400">
           <span>Convert &amp; send</span>
-          <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-emerald-600 dark:text-emerald-400">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-            Live rate
-          </span>
+          {quote?.indicative ? (
+            <span className="flex items-center gap-1 rounded-full bg-zinc-500/10 px-2 py-0.5 text-zinc-500 dark:text-zinc-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-zinc-400" />
+              Indicative rate
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-emerald-600 dark:text-emerald-400">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+              Live rate
+            </span>
+          )}
         </div>
 
         <div className="mt-4 rounded-2xl border border-black/[.06] bg-zinc-50 p-4 dark:border-white/[.06] dark:bg-black">
@@ -200,7 +214,11 @@ export function HeroVisual() {
         </div>
 
         <p className="mt-2 min-h-[16px] px-1 text-[11px] text-zinc-400 dark:text-zinc-600">
-          {error ? "Live rates unlock once sandbox keys are connected." : quote ? `Fee: $${quote.total_fees}` : "Live rate loading…"}
+          {quote
+            ? quote.indicative
+              ? `Indicative — fee: $${quote.total_fees}`
+              : `Fee: $${quote.total_fees}`
+            : "Live rate loading…"}
         </p>
 
         <Link
