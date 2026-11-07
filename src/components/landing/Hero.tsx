@@ -35,9 +35,9 @@ export function Hero() {
             variants={fadeUp}
             className="text-4xl font-semibold tracking-tight text-black sm:text-6xl dark:text-zinc-50"
           >
-            Send money home,{" "}
+            Get paid for work,{" "}
             <span className="bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-400 bg-clip-text text-transparent">
-              instantly.
+              from anywhere.
             </span>
           </motion.h1>
 
@@ -45,8 +45,9 @@ export function Hero() {
             variants={fadeUp}
             className="max-w-lg text-lg text-zinc-600 dark:text-zinc-400"
           >
-            Beam moves money across borders with real exchange rates and
-            direct bank payouts — no middlemen, no guesswork on fees.
+            Get paid instantly, pay a seller abroad in your own currency,
+            or hire with escrow protection — one platform, powered end to
+            end by the Blaaiz API.
           </motion.p>
 
           <motion.div
@@ -57,7 +58,7 @@ export function Hero() {
               href="/send"
               className="group flex items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc]"
             >
-              Send a payout
+              Try the demo
               <HugeiconsIcon
                 icon={ArrowRight02Icon}
                 size={16}

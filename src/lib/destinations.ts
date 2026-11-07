@@ -61,6 +61,16 @@ export const fundingAssets = [
   { code: "USDC", label: "USDC", flag: "🔵", kind: "crypto" as const },
 ];
 
+// What you might already be holding — for paying a merchant or a friend
+// abroad directly, without finding a way to convert it yourself first.
+export const localCurrencies = [
+  { code: "NGN", label: "NGN", flag: "🇳🇬" },
+  { code: "GHS", label: "GHS", flag: "🇬🇭" },
+  { code: "KES", label: "KES", flag: "🇰🇪" },
+  { code: "GBP", label: "GBP", flag: "🇬🇧" },
+  { code: "USD", label: "USD", flag: "🇺🇸" },
+];
+
 export const cryptoNetworkFallback = [
   { id: "ETHEREUM_MAINNET", label: "Ethereum" },
   { id: "BSC_MAINNET", label: "BNB Smart Chain" },

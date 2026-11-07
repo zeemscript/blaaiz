@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Beam — cross-border payouts",
+  title: "Beam — hire & pay across borders",
   description:
-    "Send money home instantly with real exchange rates, built on the Blaaiz API.",
+    "Global clients fund jobs in crypto or USD, held in escrow until work is done, then released instantly to a bank account, mobile money, or ACH — built on the Blaaiz API.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

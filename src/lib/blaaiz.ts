@@ -3,14 +3,23 @@ import { Blaaiz } from "blaaiz-nodejs-sdk";
 let client: Blaaiz | null = null;
 
 export function getBlaaizClient(): Blaaiz {
-  if (!process.env.BLAAIZ_API_KEY) {
+  const clientId = process.env.BLAAIZ_CLIENT_ID;
+  const clientSecret = process.env.BLAAIZ_CLIENT_SECRET;
+  const apiKey = process.env.BLAAIZ_API_KEY;
+
+  if (!(clientId && clientSecret) && !apiKey) {
     throw new Error(
-      "BLAAIZ_API_KEY is not set. Add it to .env.local (see .env.local.example)."
+      "Blaaiz credentials are not set. Add BLAAIZ_CLIENT_ID and BLAAIZ_CLIENT_SECRET " +
+        "(OAuth, from the API & Webhooks page) or BLAAIZ_API_KEY (legacy) to .env.local " +
+        "(see .env.local.example)."
     );
   }
 
   if (!client) {
-    client = new Blaaiz(process.env.BLAAIZ_API_KEY, {
+    client = new Blaaiz({
+      api_key: apiKey,
+      client_id: clientId,
+      client_secret: clientSecret,
       baseURL: process.env.BLAAIZ_API_URL || "https://api-dev.blaaiz.com",
     });
   }

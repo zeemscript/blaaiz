@@ -10,12 +10,17 @@ const faqs = [
   {
     question: "Is Beam a real product?",
     answer:
-      "Beam is a demo built for the Blaaiz Buildathon. It calls the real Blaaiz API — bank lookups, fee breakdowns, and payouts all run through Blaaiz's sandbox.",
+      "Beam is a demo built for the Blaaiz Buildathon. It calls the real Blaaiz API — crypto deposit addresses, bank lookups, fee breakdowns, and payouts all run through Blaaiz's sandbox.",
   },
   {
-    question: "Which currencies and countries are supported?",
+    question: "How does the escrow step actually work?",
     answer:
-      "This demo sends USD to Nigerian bank accounts, but the underlying Blaaiz API supports bank transfer, mobile money, Interac, ACH, wire, and crypto payouts across 180+ countries.",
+      "A client funds a job in USDT or USDC via a real deposit address from Blaaiz's crypto collection API. In this demo, confirming the deposit landed is a manual step — in production that confirmation would come automatically from Blaaiz's crypto-collection webhooks. Once funded, releasing the escrow triggers a real payout.",
+  },
+  {
+    question: "Which currencies and payout methods are supported?",
+    answer:
+      "This demo funds jobs in USDT or USDC and pays out via bank transfer to Nigeria or the UK, mobile money to Kenya or Ghana, or ACH to the US — all on the same Blaaiz payout API, which also supports Interac and wire transfer.",
   },
   {
     question: "How are fees calculated?",
@@ -33,7 +38,7 @@ export function Faq() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="mx-auto max-w-3xl px-6 py-20 sm:px-10">
+    <section id="faq" className="mx-auto max-w-6xl px-6 py-24 sm:px-10 sm:py-32">
       <motion.div
         variants={fadeUp}
         initial="hidden"
@@ -51,13 +56,15 @@ export function Faq() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-80px" }}
-        className="flex flex-col gap-3"
+        className="mx-auto flex max-w-3xl flex-col gap-3"
       >
         {faqs.map((faq, index) => {
           const isOpen = open === index;
           return (
             <motion.div
               key={faq.question}
+              layout="position"
+              transition={{ layout: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
               variants={fadeUp}
               className="overflow-hidden rounded-2xl border border-black/[.08] bg-white dark:border-white/[.08] dark:bg-zinc-900"
             >

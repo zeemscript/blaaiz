@@ -1,14 +1,16 @@
 import Link from "next/link";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ZapIcon } from "@hugeicons/core-free-icons";
 
 export function Footer() {
   return (
     <footer className="border-t border-black/[.08] px-6 py-10 sm:px-10 dark:border-white/[.08]">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-[10px] font-bold text-white">
-            B
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-orange-400 text-white">
+            <HugeiconsIcon icon={ZapIcon} size={18} strokeWidth={2} />
           </span>
-          <span className="text-sm font-medium text-black dark:text-zinc-50">
+          <span className="text-sm font-semibold text-black dark:text-zinc-50">
             Beam
           </span>
         </div>

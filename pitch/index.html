@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Beam — Pitch</title>
+<style>
+  :root {
+    --violet: #a78bfa;
+    --fuchsia: #f472b6;
+    --orange: #fb923c;
+    --bg: #09090b;
+    --card: rgba(255,255,255,.04);
+    --border: rgba(255,255,255,.1);
+    --text: #fafafa;
+    --muted: #a1a1aa;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+  }
+  .deck { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 6vh 8vw;
+    opacity: 0; visibility: hidden;
+    transform: scale(.97) translateY(12px);
+    transition: opacity .5s ease, transform .5s cubic-bezier(.16,1,.3,1), visibility 0s linear .5s;
+    text-align: center;
+    overflow: hidden;
+  }
+  .slide.active {
+    opacity: 1; visibility: visible;
+    transform: scale(1) translateY(0);
+    transition: opacity .5s ease, transform .5s cubic-bezier(.16,1,.3,1), visibility 0s;
+  }
+  .bg-glow { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .bg-glow span {
+    position: absolute; border-radius: 999px; filter: blur(90px);
+  }
+  .grid-overlay {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black, transparent);
+            mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black, transparent);
+  }
+  .content { position: relative; z-index: 1; max-width: 980px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: clamp(11px, 1.1vw, 13px); font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--muted); background: var(--card); border: 1px solid var(--border);
+    padding: 7px 16px; border-radius: 999px; margin-bottom: clamp(20px, 3vh, 36px);
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 999px; background: linear-gradient(135deg, var(--violet), var(--orange)); }
+  h1 {
+    font-size: clamp(34px, 5.4vw, 72px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04;
+    margin: 0 0 clamp(14px, 2vh, 24px);
+  }
+  h2 {
+    font-size: clamp(26px, 3.6vw, 46px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;
+    margin: 0 0 clamp(14px, 2vh, 22px);
+  }
+  .lead {
+    font-size: clamp(16px, 1.7vw, 23px); color: var(--muted); line-height: 1.55; margin: 0 auto;
+    max-width: 760px;
+  }
+  .gradient-text {
+    background: linear-gradient(90deg, var(--violet), var(--fuchsia), var(--orange));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .logo-mark {
+    width: clamp(64px, 8vw, 96px); height: clamp(64px, 8vw, 96px);
+    border-radius: 28%; margin-bottom: clamp(20px, 3vh, 32px);
+    background: linear-gradient(135deg, var(--violet), var(--fuchsia), var(--orange));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 20px 60px -20px rgba(168,85,247,.6);
+  }
+  .logo-mark svg { width: 54%; height: 54%; stroke: white; }
+  .wordmark { font-size: clamp(40px, 7vw, 88px); font-weight: 800; letter-spacing: -0.03em; margin: 0 0 clamp(16px, 2vh, 20px); }
+  .byline { margin-top: clamp(28px, 5vh, 56px); font-size: clamp(12px, 1.1vw, 14px); color: var(--muted); letter-spacing: .02em; }
+
+  .quote-card {
+    margin-top: clamp(22px, 3.5vh, 36px);
+    border: 1px solid var(--border); background: var(--card); border-radius: 20px;
+    padding: clamp(18px, 2.4vw, 28px) clamp(20px, 3vw, 34px);
+    max-width: 700px;
+  }
+  .quote-card p { font-size: clamp(15px, 1.5vw, 19px); font-style: italic; color: #e4e4e7; margin: 0 0 8px; line-height: 1.5; }
+  .quote-card span { font-size: clamp(12px, 1.1vw, 14px); color: var(--muted); }
+
+  .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 1.6vw, 20px); margin-top: clamp(28px, 4vh, 44px); width: 100%; max-width: 920px; }
+  .pillar {
+    border: 1px solid var(--border); background: var(--card); border-radius: 22px;
+    padding: clamp(18px, 2.2vw, 26px); text-align: left;
+  }
+  .pillar .icon {
+    width: 42px; height: 42px; border-radius: 13px; margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pillar .icon svg { width: 20px; height: 20px; stroke: white; }
+  .pillar h3 { font-size: clamp(15px, 1.5vw, 18px); margin: 0 0 6px; font-weight: 650; }
+  .pillar p { font-size: clamp(12.5px, 1.25vw, 14.5px); color: var(--muted); margin: 0; line-height: 1.45; }
+  .p-violet { background: linear-gradient(135deg, var(--violet), #6366f1); }
+  .p-fuchsia { background: linear-gradient(135deg, var(--fuchsia), #ec4899); }
+  .p-orange { background: linear-gradient(135deg, var(--orange), #f59e0b); }
+
+  .stack { display: flex; flex-direction: column; gap: clamp(10px, 1.6vh, 16px); margin-top: clamp(24px, 4vh, 40px); width: 100%; max-width: 760px; text-align: left; }
+  .stack-item { display: flex; align-items: flex-start; gap: 14px; border: 1px solid var(--border); background: var(--card); border-radius: 16px; padding: clamp(13px, 1.6vw, 18px) clamp(16px, 2vw, 22px); }
+  .stack-item .num { font-size: clamp(12px, 1.2vw, 14px); font-weight: 700; color: var(--violet); flex-shrink: 0; width: 26px; }
+  .stack-item div p:first-child { margin: 0 0 2px; font-weight: 600; font-size: clamp(14px, 1.4vw, 16.5px); }
+  .stack-item div p:last-child { margin: 0; color: var(--muted); font-size: clamp(12.5px, 1.25vw, 14.5px); line-height: 1.45; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.5vw, 32px); margin-top: clamp(28px, 4.5vh, 48px); width: 100%; max-width: 840px; }
+  .stat .num { font-size: clamp(30px, 4vw, 52px); font-weight: 800; letter-spacing: -.02em; }
+  .stat .label { font-size: clamp(12px, 1.2vw, 14px); color: var(--muted); margin-top: 6px; }
+
+  .cta-big { font-size: clamp(40px, 6vw, 80px); font-weight: 800; letter-spacing: -0.03em; }
+  .arrow-cue { margin-top: clamp(20px, 3vh, 32px); font-size: clamp(14px, 1.4vw, 17px); color: var(--muted); display: flex; align-items: center; gap: 10px; }
+
+  .progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--violet), var(--fuchsia), var(--orange)); z-index: 10; transition: width .4s ease; }
+  .nav-zone { position: fixed; top: 0; bottom: 0; width: 20%; z-index: 5; cursor: pointer; }
+  .nav-left { left: 0; } .nav-right { right: 0; }
+  .counter { position: fixed; bottom: 22px; right: 28px; font-size: 12px; color: var(--muted); letter-spacing: .04em; z-index: 6; font-variant-numeric: tabular-nums; }
+  .dots { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); display: flex; gap: 7px; z-index: 6; }
+  .dots span { width: 6px; height: 6px; border-radius: 999px; background: rgba(255,255,255,.18); transition: background .3s, transform .3s; }
+  .dots span.active { background: var(--text); transform: scale(1.3); }
+
+  @media (max-width: 720px) {
+    .pillars, .stats-row { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    body { overflow: visible; }
+    .nav-zone, .progress, .counter, .dots { display: none; }
+    .slide {
+      position: relative; opacity: 1 !important; visibility: visible !important; transform: none !important;
+      page-break-after: always; height: 100vh;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="nav-zone nav-left" onclick="go(-1)"></div>
+<div class="nav-zone nav-right" onclick="go(1)"></div>
+<div class="counter"><span id="counterNow">1</span> / <span id="counterTotal">7</span></div>
+<div class="dots" id="dots"></div>
+
+<div class="deck" id="deck">
+
+  <!-- 1. TITLE -->
+  <section class="slide active">
+    <div class="bg-glow">
+      <span style="width:34rem;height:34rem;left:10%;top:-10%;background:rgba(167,139,250,.28);"></span>
+      <span style="width:30rem;height:30rem;right:5%;bottom:-10%;background:rgba(251,146,60,.2);"></span>
+    </div>
+    <div class="grid-overlay"></div>
+    <div class="content">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+      <div class="wordmark">Beam</div>
+      <h1><span class="gradient-text">Get paid as an African.</span></h1>
+      <p class="lead">Not another app for sending money home — a real payments platform for getting paid, paying abroad, and hiring across borders, in whatever currency you've got.</p>
+      <div class="byline">Built on the Blaaiz API · Blaaiz Buildathon · GDG Ilorin</div>
+    </div>
+  </section>
+
+  <!-- 2. PROBLEM -->
+  <section class="slide">
+    <div class="bg-glow"><span style="width:30rem;height:30rem;left:50%;top:0;transform:translateX(-50%);background:rgba(244,114,182,.18);"></span></div>
+    <div class="grid-overlay"></div>
+    <div class="content">
+      <div class="eyebrow"><span class="dot"></span>The problem</div>
+      <h2>Amara is a designer in Lagos.<br>Her client in Austin just paid her <span class="gradient-text">$400 in USDT.</span></h2>
+      <p class="lead">Now she needs that in naira. She bounces between a crypto exchange, a P2P trader, and her bank app — losing time and money at every hop, with no idea what rate she'll actually land on.</p>
+      <div class="stack">
+        <div class="stack-item">
+          <span class="num">01</span>
+          <div><p>Every "cross-border money" app solves the other direction</p><p>LemFi, NALA, Afriex — billions raised, all built for sending money <em>into</em> Africa.</p></div>
+        </div>
+        <div class="stack-item">
+          <span class="num">02</span>
+          <div><p>Nobody's building for getting paid <em>as</em> an African</p><p>Freelancers, SMEs, and gig workers earning in crypto or USD have no clean way to cash out.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. THE GAP / QUOTE -->
+  <section class="slide">
+    <div class="bg-glow"><span style="width:32rem;height:32rem;left:15%;bottom:-15%;background:rgba(167,139,250,.22);"></span></div>
+    <div class="grid-overlay"></div>
+    <div class="content">
+      <div class="eyebrow"><span class="dot"></span>The gap Blaaiz itself named</div>
+      <h2>That's not our framing.<br><span class="gradient-text">It's Blaaiz's own thesis.</span></h2>
+      <div class="quote-card">
+        <p>"Most remittance companies only let you send money to Africa — but what about getting paid as an African?"</p>
+        <span>— Blaaiz founder</span>
+      </div>
+      <p class="lead" style="margin-top:28px;">We built Beam to be exactly that answer — on top of the infrastructure Blaaiz already built to make it possible.</p>
+    </div>
+  </section>
+
+  <!-- 4. SOLUTION / PILLARS -->
+  <section class="slide">
+    <div class="bg-glow">
+      <span style="width:22rem;height:22rem;left:5%;top:10%;background:rgba(167,139,250,.2);"></span>
+      <span style="width:22rem;height:22rem;left:50%;top:0;transform:translateX(-50%);background:rgba(244,114,182,.2);"></span>
+      <span style="width:22rem;height:22rem;right:5%;top:10%;background:rgba(251,146,60,.2);"></span>
+    </div>
+    <div class="grid-overlay"></div>
+    <div class="content">
+      <div class="eyebrow"><span class="dot"></span>The solution</div>
+      <h2>One platform. <span class="gradient-text">Three real flows.</span></h2>
+      <p class="lead">Whatever currency you have, or whatever currency you're owed — Beam handles the conversion.</p>
+      <div class="pillars">
+        <div class="pillar">
+          <div class="icon p-violet"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <h3>Instant payout</h3>
+          <p>Get paid in crypto or USD — cash out in your own currency in minutes.</p>
+        </div>
+        <div class="pillar">
+          <div class="icon p-fuchsia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <h3>Pay abroad</h3>
+          <p>Holding naira in Lagos, buying something in Accra? Pay in what you have — they get cedis, automatically.</p>
+        </div>
+        <div class="pillar">
+          <div class="icon p-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5.5 3.8 9.7 8 11 4.2-1.3 8-5.5 8-11V5z"/></svg></div>
+          <h3>Escrow for hiring</h3>
+          <p>A client funds the job in crypto. Beam holds it until work is done, then releases it in one click.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. TECH / REAL -->
+  <section class="slide">
+    <div class="bg-glow"><span style="width:30rem;height:30rem;left:50%;top:0;transform:translateX(-50%);background:rgba(167,139,250,.2);"></span></div>
+    <div class="grid-overlay"></div>
+    <div class="content">
+      <div class="eyebrow"><span class="dot"></span>Real infrastructure, not a mockup</div>
+      <h2>Every screen you'll see<br class="hide-sm"> runs on the <span class="gradient-text">real Blaaiz API.</span></h2>
+      <div class="stack">
+        <div class="stack-item"><span class="num">●</span><div><p>Crypto collections</p><p>Real USDT/USDC deposit addresses, generated live on Ethereum, BSC, Tron, and Polygon.</p></div></div>
+        <div class="stack-item"><span class="num">●</span><div><p>Live FX & fees</p><p>Every rate and fee breakdown is a real-time quote from Blaaiz — never a guess.</p></div></div>
+        <div class="stack-item"><span class="num">●</span><div><p>Multi-rail payouts</p><p>Bank transfer, mobile money, and ACH — across Africa, Europe, and North America.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. WHY NOW -->
+  <section class="slide">
+    <div class="bg-glow"><span style="width:30rem;height:30rem;left:10%;top:-10%;background:rgba(251,146,60,.18);"></span></div>
+    <div class="grid-overlay"></div>
+    <div class="content">
+      <div class="eyebrow"><span class="dot"></span>Why now</div>
+      <h2>This rail is already <span class="gradient-text">massive — and legitimizing.</span></h2>
+      <div class="stats-row">
+        <div class="stat"><div class="num gradient-text">~60%</div><div class="label">of Sub-Saharan Africa's stablecoin inflows run through Nigeria</div></div>
+        <div class="stat"><div class="num gradient-text">$59B</div><div class="label">in crypto inflows to Nigeria, Jul 2023–Jun 2024 (IMF)</div></div>
+        <div class="stat"><div class="num gradient-text">0 → 1</div><div class="label">Nigeria's SEC is formalizing this rail — sandbox + naira stablecoin, cNGN</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. DEMO + CLOSE -->
+  <section class="slide">
+    <div class="bg-glow">
+      <span style="width:34rem;height:34rem;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(167,139,250,.22);"></span>
+    </div>
+    <div class="grid-overlay"></div>
+    <div class="content">
+      <div class="cta-big">Let's see it <span class="gradient-text">live.</span></div>
+      <div class="arrow-cue">→ switching to the real app, real API, real payout</div>
+      <div class="byline" style="margin-top:64px;">Beam — whatever currency you have, whatever currency you're owed.<br>One platform, real infrastructure. Thank you.</div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let i = 0;
+
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, idx) => {
+    const d = document.createElement('span');
+    if (idx === 0) d.classList.add('active');
+    dotsEl.appendChild(d);
+  });
+  document.getElementById('counterTotal').textContent = total;
+
+  function render() {
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+    document.getElementById('progress').style.width = ((i + 1) / total * 100) + '%';
+    document.getElementById('counterNow').textContent = i + 1;
+    Array.from(dotsEl.children).forEach((d, idx) => d.classList.toggle('active', idx === i));
+  }
+
+  function go(delta) {
+    i = Math.min(total - 1, Math.max(0, i + delta));
+    render();
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) { go(1); e.preventDefault(); }
+    if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { go(-1); e.preventDefault(); }
+    if (e.key === 'Home') { i = 0; render(); }
+    if (e.key === 'End') { i = total - 1; render(); }
+  });
+
+  let touchStartX = null;
+  window.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  window.addEventListener('touchend', (e) => {
+    if (touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+    touchStartX = null;
+  });
+
+  render();
+</script>
+
+</body>
+</html>

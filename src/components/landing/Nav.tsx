@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Cancel01Icon, Menu01Icon } from "@hugeicons/core-free-icons";
+import { Cancel01Icon, Menu01Icon, ZapIcon } from "@hugeicons/core-free-icons";
 
 const links = [
   { href: "#how-it-works", label: "How it works" },
@@ -31,10 +31,10 @@ export function Nav() {
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 sm:px-10">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-xs font-bold text-white">
-            B
+          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-orange-400 text-white shadow-[0_6px_16px_-4px_rgba(168,85,247,.55)]">
+            <HugeiconsIcon icon={ZapIcon} size={22} strokeWidth={2} />
           </span>
-          <span className="text-lg font-semibold text-black dark:text-zinc-50">
+          <span className="text-xl font-semibold tracking-tight text-black dark:text-zinc-50">
             Beam
           </span>
         </Link>
