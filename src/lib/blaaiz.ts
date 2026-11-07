@@ -2,6 +2,14 @@ import { Blaaiz } from "blaaiz-nodejs-sdk";
 
 let client: Blaaiz | null = null;
 
+export function hasBlaaizCredentials(): boolean {
+  const clientId = process.env.BLAAIZ_CLIENT_ID;
+  const clientSecret = process.env.BLAAIZ_CLIENT_SECRET;
+  const apiKey = process.env.BLAAIZ_API_KEY;
+  const walletId = process.env.BLAAIZ_WALLET_ID;
+  return Boolean(((clientId && clientSecret) || apiKey) && walletId);
+}
+
 export function getBlaaizClient(): Blaaiz {
   const clientId = process.env.BLAAIZ_CLIENT_ID;
   const clientSecret = process.env.BLAAIZ_CLIENT_SECRET;
