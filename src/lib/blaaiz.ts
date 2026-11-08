@@ -6,8 +6,11 @@ export function hasBlaaizCredentials(): boolean {
   const clientId = process.env.BLAAIZ_CLIENT_ID;
   const clientSecret = process.env.BLAAIZ_CLIENT_SECRET;
   const apiKey = process.env.BLAAIZ_API_KEY;
-  const walletId = process.env.BLAAIZ_WALLET_ID;
-  return Boolean(((clientId && clientSecret) || apiKey) && walletId);
+  return Boolean((clientId && clientSecret) || apiKey);
+}
+
+export function hasBlaaizWallet(): boolean {
+  return Boolean(process.env.BLAAIZ_WALLET_ID);
 }
 
 export function getBlaaizClient(): Blaaiz {
